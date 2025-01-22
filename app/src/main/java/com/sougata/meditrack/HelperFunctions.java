@@ -40,7 +40,7 @@ public class HelperFunctions {
 
     public static String pad(int num) {
         if (num < 10) {
-            return "0" + String.valueOf(num);
+            return "0" + num;
         } else {
             return String.valueOf(num);
         }
@@ -78,6 +78,7 @@ public class HelperFunctions {
 
     public static Calendar timeMillisToHM(long time) {
         Calendar c = Calendar.getInstance();
+        c.set(Calendar.MILLISECOND, 0);
         c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), 0, 0, 0);
         long t = c.getTimeInMillis() + time;
         c.setTimeInMillis(t);

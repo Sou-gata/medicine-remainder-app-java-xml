@@ -27,6 +27,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Objects;
 
 public class AddMedicineActivity extends AppCompatActivity {
     private EditText name;
@@ -34,10 +35,8 @@ public class AddMedicineActivity extends AppCompatActivity {
     private int shape;
     int repeat = 0;
     ArrayList<Long> times = new ArrayList<>();
-    ArrayList<String> uniqueAlarmId = new ArrayList<>();
     private LinearLayout containerLayout;
     Database db;
-    int h, m;
     long endDate;
 
     @Override
@@ -56,7 +55,7 @@ public class AddMedicineActivity extends AppCompatActivity {
         window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
         Toolbar toolbar = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Add Medicine");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Add Medicine");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         name = findViewById(R.id.et_medicine_name);
@@ -164,6 +163,7 @@ public class AddMedicineActivity extends AppCompatActivity {
                 TextView tv = new TextView(AddMedicineActivity.this);
                 String time = HelperFunctions.get12hTime(hour, minute);
                 Calendar c = Calendar.getInstance();
+                c.set(Calendar.MILLISECOND, 0);
                 c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), hour, minute, 0);
                 long t1 = c.getTimeInMillis();
                 c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), 0, 0, 0);
@@ -213,46 +213,60 @@ public class AddMedicineActivity extends AppCompatActivity {
         String txt = name.getText().toString();
         if (!txt.isEmpty() && !times.isEmpty()) {
 //            String ids = setAlarms(times, repeat, dys);
-            String ids = setAlarms(times, 1, dys);
+            String ids = setAlarms(times, 1, dys, txt, shape);
             String[] alarmIds = ids.split(",");
             for (int i = 0; i < alarmIds.length; i++) {
                 alarmIds[i] = alarmIds[i].trim();
             }
-            Calendar creationDate = Calendar.getInstance();
-            creationDate.set(creationDate.get(Calendar.YEAR), creationDate.get(Calendar.MONTH), creationDate.get(Calendar.DATE), 0, 0, 0);
+            Calendar creationDate = Calendar.getInstance(), temp = Calendar.getInstance();
+            creationDate.setTimeInMillis(0);
+            creationDate.set(temp.get(Calendar.YEAR), temp.get(Calendar.MONTH), temp.get(Calendar.DATE), 0, 0, 0);
+
 //            db.insertData(name.getText().toString(), shape, repeat, times, creationDate.getTimeInMillis(), endDate, repeatDaysStr, alarmIds);
-            db.insertData(name.getText().toString(), shape, 1, times, creationDate.getTimeInMillis(), endDate, repeatDaysStr, alarmIds);
+            db.insertData(txt, shape, 1, times, creationDate.getTimeInMillis(), endDate, repeatDaysStr, alarmIds);
             finish();
         } else {
             Toast.makeText(this, "Please fill al the details", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private String setAlarms(ArrayList<Long> times, int repeat, ArrayList<Integer> days) {
-        Calendar calendar = Calendar.getInstance();
+    private String setAlarms(ArrayList<Long> times, int repeat, ArrayList<Integer> days, String name, int icon) {
         StringBuilder ids = new StringBuilder();
         for (long time : times) {
-            Calendar c = HelperFunctions.timeMillisToHM(time);
             if (repeat == 1) {
                 for (int day : days) {
+                    Calendar c = Calendar.getInstance();
                     c.set(Calendar.MILLISECOND, 0);
-                    c.set(Calendar.DAY_OF_WEEK, day);
-                    if (c.before(Calendar.getInstance())) {
-                        c.add(Calendar.WEEK_OF_YEAR, 1);
+                    c.set(Calendar.HOUR_OF_DAY, 0);
+                    c.set(Calendar.MINUTE, 0);
+                    c.set(Calendar.SECOND, 0);
+                    c.add(Calendar.MILLISECOND, (int) time);
+                    int diff = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - day;
+                    if (diff != 0) {
+                        c.add(Calendar.DATE, -diff);
                     }
-                    long delay = c.getTimeInMillis() - calendar.getTimeInMillis();
-                    String uniqueWorkerName = String.valueOf(Calendar.getInstance().getTimeInMillis()) + String.valueOf(c.getTimeInMillis());
+                    if (c.before(Calendar.getInstance())) {
+                        c.add(Calendar.DATE, 7);
+                    }
+                    long delay = c.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
+                    String uniqueWorkerName = String.valueOf(Calendar.getInstance().getTimeInMillis()) + c.getTimeInMillis();
                     ids.append(uniqueWorkerName).append(" ");
-                    AlarmScheduler.schedulePeriodicAlarm(this, uniqueWorkerName, delay);
+                    AlarmScheduler.schedulePeriodicAlarm(this, uniqueWorkerName, delay, name, icon);
                 }
             } else {
                 // TODO: fix this part
+                Calendar c = Calendar.getInstance();
+                c.set(Calendar.MILLISECOND, 0);
+                c.set(Calendar.HOUR_OF_DAY, 0);
+                c.set(Calendar.MINUTE, 0);
+                c.set(Calendar.SECOND, 0);
+                c.add(Calendar.MILLISECOND, (int) time);
                 c.set(Calendar.MILLISECOND, 0);
                 if (c.before(Calendar.getInstance())) {
                     c.add(Calendar.DATE, 1);
                 }
-                long delay = c.getTimeInMillis() - calendar.getTimeInMillis();
-                String uniqueWorkerName = String.valueOf(Calendar.getInstance().getTimeInMillis()) + String.valueOf(c.getTimeInMillis());
+                long delay = c.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
+                String uniqueWorkerName = String.valueOf(Calendar.getInstance().getTimeInMillis()) + c.getTimeInMillis();
                 ids.append(uniqueWorkerName);
                 AlarmScheduler.scheduleOneTimeAlarm(this, uniqueWorkerName, delay);
             }

@@ -12,7 +12,7 @@ import java.util.List;
 public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerViewHolder> {
     Context context;
     List<HomeMedicineListItem> items;
-    private OnItemClickListener listener;
+    private final OnItemClickListener listener;
 
     public HomeRecyclerViewAdapter(Context context, List<HomeMedicineListItem> items, OnItemClickListener listener) {
         this.context = context;
@@ -29,7 +29,7 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
     @Override
     public void onBindViewHolder(@NonNull HomeRecyclerViewHolder holder, int position) {
         int dose = items.get(position).getNumOfDose();
-        String doseText = "(" + String.valueOf(dose) + (dose <= 1 ? " dose)" : " doses)");
+        String doseText = "(" + dose + (dose <= 1 ? " dose)" : " doses)");
 
         holder.image.setImageResource(items.get(position).getImage());
         holder.name.setText(items.get(position).getName());

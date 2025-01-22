@@ -11,8 +11,8 @@ import android.widget.TextView;
 import java.util.List;
 
 public class ShapesAdapter extends BaseAdapter {
-    private Context context;
-    private List<ShapeDropdownItem> shapeList;
+    private final Context context;
+    private final List<ShapeDropdownItem> shapeList;
     public ShapesAdapter(Context context, List<ShapeDropdownItem> shapeList){
         this.context = context;
         this.shapeList = shapeList;
