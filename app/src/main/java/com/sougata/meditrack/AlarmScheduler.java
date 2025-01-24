@@ -4,8 +4,6 @@ import android.content.Context;
 
 import androidx.work.Data;
 import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.ExistingWorkPolicy;
-import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
@@ -17,6 +15,7 @@ public class AlarmScheduler {
                 .putString("title", "Remainder")
                 .putString("message", "It's time to take " + name)
                 .putInt("icon", icon)
+                .putInt("type", 1)
                 .build();
         PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(
                 NotificationWorker.class,
@@ -31,14 +30,25 @@ public class AlarmScheduler {
                 .enqueueUniquePeriodicWork(uniqueWorkName, ExistingPeriodicWorkPolicy.KEEP, workRequest);
     }
 
-    public static void scheduleOneTimeAlarm(Context context, String uniqueWorkName, long delayInMills) {
-        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class)
-                .setInitialDelay(delayInMills, TimeUnit.MINUTES)
+    public static void scheduleOneTimeAlarm(Context context, String uniqueWorkName, long delayInMills, String name, int icon) {
+        Data inputData = new Data.Builder()
+                .putString("title", "Remainder")
+                .putString("message", "It's time to take " + name)
+                .putInt("icon", icon)
+                .putInt("type", 0)
+                .putString("tag", uniqueWorkName)
+                .build();
+        PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(
+                NotificationWorker.class,
+                1, TimeUnit.MINUTES
+        )
+                .setInitialDelay(delayInMills, TimeUnit.MILLISECONDS)
+                .setInputData(inputData)
                 .addTag(uniqueWorkName)
                 .build();
 
         WorkManager.getInstance(context)
-                .enqueueUniqueWork(uniqueWorkName, ExistingWorkPolicy.REPLACE, workRequest);
+                .enqueueUniquePeriodicWork(uniqueWorkName, ExistingPeriodicWorkPolicy.KEEP, workRequest);
     }
 
     public static void cancelAlarm(Context context, String uniqueWorkName) {

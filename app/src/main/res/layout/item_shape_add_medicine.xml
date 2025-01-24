@@ -9,13 +9,13 @@
         android:id="@+id/iv_shape_add"
         android:layout_width="32dp"
         android:layout_height="32dp"
+        android:contentDescription="@string/medicine_name"
         android:src="@drawable/ic_shape_tablet"
         android:layout_marginStart="4dp"/>
     <TextView
         android:id="@+id/tv_add_shape_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tablet"
         android:textSize="16sp"
         android:layout_marginStart="15dp"/>
 </LinearLayout>

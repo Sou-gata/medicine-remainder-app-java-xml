@@ -24,6 +24,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.util.Calendar;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class ActivityViewRemainder extends AppCompatActivity {
     Database db;
@@ -45,7 +47,7 @@ public class ActivityViewRemainder extends AppCompatActivity {
         window.setStatusBarColor(getResources().getColor(R.color.colorPrimary));
         Toolbar toolbar = findViewById(R.id.toolbar3);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("View Medicine");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("View Medicine");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         db = new Database(this);
@@ -64,6 +66,26 @@ public class ActivityViewRemainder extends AppCompatActivity {
                 finish();
             }
         });
+        ImageView editCurrentMed = findViewById(R.id.iv_view_medicine_edit);
+        editCurrentMed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editData();
+            }
+        });
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        loadData(id);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadData(id);
     }
 
     @Override
@@ -73,6 +95,7 @@ public class ActivityViewRemainder extends AppCompatActivity {
     }
 
     private void loadData(int id) {
+        HelperFunctions.addDelay(500);
         Cursor cursor = db.getSpecificMedicine(id);
         String name;
         int icon, repeat;
@@ -255,5 +278,11 @@ public class ActivityViewRemainder extends AppCompatActivity {
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+    private void editData(){
+        Intent intent = new Intent(ActivityViewRemainder.this, AddMedicineActivity.class);
+        intent.putExtra("id", id);
+        intent.putExtra("edit", true);
+        startActivity(intent);
     }
 }

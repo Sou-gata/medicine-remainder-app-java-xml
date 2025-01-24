@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".HomeActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -35,13 +35,13 @@
                 android:id="@+id/tv_view_selected_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="21/01/2025"
+                android:text="@string/demo_date"
                 android:textColor="@color/colorPrimary"
                 android:textSize="16sp" />
             <ImageView
                 android:layout_marginStart="10dp"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:src="@drawable/calendar_regular"/>
         </LinearLayout>
 
@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:gravity="center"
-            android:text="No medicine for today"
+            android:text="@string/no_medicine_for_today"
             android:textColor="@color/black"
             android:textSize="25sp" />
 
@@ -67,6 +67,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:backgroundTint="@color/colorPrimary"
+        android:contentDescription="@string/add_task"
         android:src="@drawable/ic_fab_add"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Button.Rounded"
         app:tint="@color/white" />

@@ -21,13 +21,13 @@ public class Database extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE medicines(" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "name TEXT, " +
-                "icon INTEGER DEFAULT 0," +
-                "repeat INTEGER DEFAULT 0," +
-                "creation_date INTEGER DEFAULT 1," +
-                "end_date INTEGER DEFAULT 0," +
-                "repeat_days TEXT DEFAULT \"0 0 0 0 0 0 0\"" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " + //0
+                "name TEXT, " + // 1
+                "icon INTEGER DEFAULT 0," + // 2
+                "repeat INTEGER DEFAULT 0," + // 3
+                "creation_date INTEGER DEFAULT 1," + // 4
+                "end_date INTEGER DEFAULT 0," + // 5
+                "repeat_days TEXT DEFAULT \"0 0 0 0 0 0 0\"" + // 6
                 ")");
 
         db.execSQL("CREATE TABLE times(" +
@@ -45,7 +45,7 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS times");
     }
 
-    public void insertData(String name, int icon, int repeat, ArrayList<Long> times, long creationDate, long endDate, String repeatDays, String[] alarmIds) {
+    public void insertData(String name, int icon, int repeat, ArrayList<AddMedicineTimeContent> contents, long creationDate, long endDate, String repeatDays, String[] alarmIds) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("name", name);
@@ -55,10 +55,30 @@ public class Database extends SQLiteOpenHelper {
         contentValues.put("end_date", endDate);
         contentValues.put("repeat_days", repeatDays);
         long newRowId = db.insert("medicines", null, contentValues);
-        for (int i = 0; i < times.size(); i++) {
+        for (int i = 0; i < contents.size(); i++) {
             ContentValues c = new ContentValues();
             c.put("medicine_id", newRowId);
-            c.put("time", times.get(i));
+            c.put("time", contents.get(i).time);
+            c.put("alarm_id", alarmIds[i]);
+            db.insert("times", null, c);
+        }
+    }
+
+    public void editMedicine(long id, String name, int icon, int repeat, ArrayList<AddMedicineTimeContent> contents, long creationDate, long endDate, String repeatDays, String[] alarmIds) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("name", name);
+        contentValues.put("icon", icon);
+        contentValues.put("repeat", repeat);
+        contentValues.put("creation_date", creationDate);
+        contentValues.put("end_date", endDate);
+        contentValues.put("repeat_days", repeatDays);
+        long newRowId = db.update("medicines", contentValues, "id = ?", new String[]{String.valueOf(id)});
+        db.delete("times", "medicine_id = ?", new String[]{String.valueOf(id)});
+        for (int i = 0; i < contents.size(); i++) {
+            ContentValues c = new ContentValues();
+            c.put("medicine_id", newRowId);
+            c.put("time", contents.get(i).time);
             c.put("alarm_id", alarmIds[i]);
             db.insert("times", null, c);
         }
@@ -89,12 +109,11 @@ public class Database extends SQLiteOpenHelper {
         String selection = "id = ?";
         String[] selectionArgs = {String.valueOf(id)};
         db.delete("medicines", selection, selectionArgs);
-
         String selection2 = "medicine_id = ?";
         db.delete("times", selection2, selectionArgs);
     }
 
-    public void deleteSingleAlarm(long id){
+    public void deleteSingleAlarm(long id) {
         SQLiteDatabase db = this.getWritableDatabase();
         String selection = "id = ?";
         String[] selectionArgs = {String.valueOf(id)};

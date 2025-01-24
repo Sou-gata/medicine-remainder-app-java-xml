@@ -30,9 +30,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity {
     FloatingActionButton addMedicine;
     RecyclerView homeRemainderList;
     List<HomeMedicineListItem> homeMedicineListItems;
@@ -51,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_home);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -71,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         addMedicine.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AddMedicineActivity.class);
+                Intent intent = new Intent(HomeActivity.this, AddMedicineActivity.class);
                 startActivity(intent);
             }
         });
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         homeRemainderList = findViewById(R.id.rv_remainders);
         homeRemainderList.setLayoutManager(new LinearLayoutManager(this));
 
-        db = new Database(MainActivity.this);
+        db = new Database(HomeActivity.this);
         showDate = findViewById(R.id.tv_view_selected_date);
         Calendar calendar = Calendar.getInstance();
         showDate.setText(HelperFunctions.calendarToDate(calendar));
@@ -90,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Calendar c = Calendar.getInstance();
-                DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this, R.style.DialogTheme, new DatePickerDialog.OnDateSetListener() {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(HomeActivity.this, R.style.DialogTheme, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         c.set(year, month, day, 0, 0, 0);
@@ -118,10 +117,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadAllData() {
-        try {
-            TimeUnit.MILLISECONDS.sleep(500);
-        } catch (Exception ignored) {
-        }
+        HelperFunctions.addDelay(500);
         homeMedicineListItems = new ArrayList<>();
         Cursor cursor = db.getAllMedicines();
         TextView tv = findViewById(R.id.tv_show_no_medicine);
@@ -179,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openViewMedicineActivity(int id) {
-        Intent intent = new Intent(MainActivity.this, ActivityViewRemainder.class);
+        Intent intent = new Intent(HomeActivity.this, ActivityViewRemainder.class);
         intent.putExtra("id", id);
         startActivity(intent);
     }

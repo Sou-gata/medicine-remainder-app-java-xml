@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.TypedValue;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 public class HelperFunctions {
     public static int dpToPx(Context context, int dp) {
@@ -76,19 +77,26 @@ public class HelperFunctions {
         return get12hTime(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
     }
 
-    public static Calendar timeMillisToHM(long time) {
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.MILLISECOND, 0);
-        c.set(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), 0, 0, 0);
-        long t = c.getTimeInMillis() + time;
-        c.setTimeInMillis(t);
-        return c;
-    }
-
     public static String calendarToDate(Calendar c) {
         int y = c.get(Calendar.YEAR);
         int m = c.get(Calendar.MONTH);
         int d = c.get(Calendar.DATE);
         return pad(d) + "/" + pad(m + 1) + "/" + y;
+    }
+
+    public static int idToSelection(int id) {
+        for (int i = 0; i < ShapeDropDownMenu.shapes.length; i++) {
+            if (ShapeDropDownMenu.shapes[i] == id) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    public static void addDelay(int delay) {
+        try {
+            TimeUnit.MILLISECONDS.sleep(delay);
+        } catch (Exception ignored) {
+        }
     }
 }

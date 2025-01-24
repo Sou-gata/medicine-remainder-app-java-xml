@@ -25,7 +25,7 @@
                 android:id="@+id/rv_iv_home_item"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="icon"
+                android:contentDescription="@string/icon"
                 android:src="@drawable/ic_shape_tablet" />
 
             <LinearLayout
@@ -43,7 +43,7 @@
                         android:id="@+id/rv_tv_home_name_item"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Parasitamol"
+                        android:text="@string/medicine_name"
                         android:textColor="@color/black"
                         android:textSize="16sp" />
 
@@ -52,14 +52,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
-                        android:text="(3 doses)"
+                        android:text="@string/n_doses"
                         android:textColor="@color/black" />
                 </LinearLayout>
                 <TextView
                     android:id="@+id/rv_tv_home_freq_item"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Daily"
+                    android:text="@string/once"
                     android:textColor="@color/black"/>
             </LinearLayout>
         </LinearLayout>
