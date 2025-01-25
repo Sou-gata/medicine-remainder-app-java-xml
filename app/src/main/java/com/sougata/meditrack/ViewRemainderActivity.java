@@ -25,9 +25,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import java.util.Calendar;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
-public class ActivityViewRemainder extends AppCompatActivity {
+public class ViewRemainderActivity extends AppCompatActivity {
     Database db;
     int id;
 
@@ -62,7 +61,7 @@ public class ActivityViewRemainder extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 db.deleteMedicine(id2);
-                Toast.makeText(ActivityViewRemainder.this, "Medicine Deleted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ViewRemainderActivity.this, "Medicine Deleted", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
@@ -112,7 +111,7 @@ public class ActivityViewRemainder extends AppCompatActivity {
             TextView tvName = findViewById(R.id.tv_view_medicine_name);
             tvName.setText(name);
             TextView tvRepeat = findViewById(R.id.tv_view_medicine_repeat);
-            tvRepeat.setText(repeat == 0 ? "Remained only once" : "Remainder will be repeated every");
+            tvRepeat.setText(repeat == 0 ? "Remained only once" : "Remainder will be repeated on every");
             TextView endDate = findViewById(R.id.tv_view_medicine_end_date);
             endDate.setText(HelperFunctions.calendarToDate(c));
 
@@ -265,7 +264,7 @@ public class ActivityViewRemainder extends AppCompatActivity {
                 db.deleteSingleAlarm(idxId);
                 String[] alarmIds = alarmId.split(" ");
                 for (String i : alarmIds) {
-                    AlarmScheduler.cancelAlarm(ActivityViewRemainder.this, i);
+                    AlarmScheduler.cancelAlarm(ViewRemainderActivity.this, i);
                 }
                 loadData(id);
             }
@@ -280,7 +279,7 @@ public class ActivityViewRemainder extends AppCompatActivity {
         alertDialog.show();
     }
     private void editData(){
-        Intent intent = new Intent(ActivityViewRemainder.this, AddMedicineActivity.class);
+        Intent intent = new Intent(ViewRemainderActivity.this, AddMedicineActivity.class);
         intent.putExtra("id", id);
         intent.putExtra("edit", true);
         startActivity(intent);

@@ -175,7 +175,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void openViewMedicineActivity(int id) {
-        Intent intent = new Intent(HomeActivity.this, ActivityViewRemainder.class);
+        Intent intent = new Intent(HomeActivity.this, ViewRemainderActivity.class);
         intent.putExtra("id", id);
         startActivity(intent);
     }

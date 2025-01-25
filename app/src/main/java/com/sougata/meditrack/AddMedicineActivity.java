@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -44,6 +46,7 @@ public class AddMedicineActivity extends AppCompatActivity {
     RadioGroup radioGroup;
     ImageView endDateSelector;
     CheckBox[] days = new CheckBox[7];
+    CheckBox everyDay;
     ArrayList<Integer> daysInt = new ArrayList<>();
     ArrayList<String> alarmIds = new ArrayList<>();
     ArrayList<Long> alarmIdx = new ArrayList<>();
@@ -55,11 +58,12 @@ public class AddMedicineActivity extends AppCompatActivity {
     long endDate;
     boolean isEdit;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.add_medicine);
+        setContentView(R.layout.activity_add_medicine);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main2), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -75,6 +79,7 @@ public class AddMedicineActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         name = findViewById(R.id.et_medicine_name);
         shapes = findViewById(R.id.sp_shapes);
+        everyDay = findViewById(R.id.cb_everyday);
         days[0] = findViewById(R.id.cb_sunday);
         days[1] = findViewById(R.id.cb_monday);
         days[2] = findViewById(R.id.cb_tuesday);
@@ -82,6 +87,33 @@ public class AddMedicineActivity extends AppCompatActivity {
         days[4] = findViewById(R.id.cb_thursday);
         days[5] = findViewById(R.id.cb_friday);
         days[6] = findViewById(R.id.cb_saturday);
+
+        int checkBoxDimension = HelperFunctions.dpToPx(this, 40);
+        int totalScreenWidth = getResources().getDisplayMetrics().widthPixels - HelperFunctions.dpToPx(this, 20);
+        int margin = (totalScreenWidth - (checkBoxDimension * 7)) / 6;
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(checkBoxDimension, checkBoxDimension);
+        params.setMargins(margin, 0, 0, 0);
+
+        for (int i = 0; i < 7; i++) {
+            CheckBox day = days[i];
+            if (i != 0) {
+                day.setLayoutParams(params);
+            }
+            day.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        day.setTextColor(getResources().getColor(R.color.colorPrimary, getTheme()));
+                        day.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_checkbox_active_bg));
+
+                    } else {
+                        day.setTextColor(getResources().getColor(R.color.black, getTheme()));
+                        day.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_checkbox_deactivate_bg));
+                    }
+                }
+            });
+        }
 
         shapes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -160,6 +192,21 @@ public class AddMedicineActivity extends AppCompatActivity {
             editDataId = intent.getIntExtra("id", 0);
             loadEditData();
         }
+        everyDay.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    for (int i = 0; i < 7; i++) {
+                        days[i].setChecked(true);
+                    }
+                }
+                else {
+                    for (int i = 0; i < 7; i++) {
+                        days[i].setChecked(false);
+                    }
+                }
+            }
+        });
     }
 
     private void setRepeatLayout() {
@@ -198,10 +245,15 @@ public class AddMedicineActivity extends AppCompatActivity {
                 String d = HelperFunctions.calendarToDate(c);
                 showEndDate.setText(d);
                 String[] dys = repeatDays.split(" ");
+                int count = 0;
                 for (int i = 0; i < 7; i++) {
                     if (dys[i].equals("1")) {
                         days[i].setChecked(true);
+                        count++;
                     }
+                }
+                if (count == 7) {
+                    everyDay.setChecked(true);
                 }
                 setRepeatLayout();
             } else {
